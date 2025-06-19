@@ -19,3 +19,7 @@ journal-tracker/
 ├── .gitignore # Git ignore rules
 └── README.md # Project documentation
 ```
+## 🧑🏽‍💻 Author
+
+**[@Draculathon](https://github.com/Draculathon)**
+MIT License © 2025
