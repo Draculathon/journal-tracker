@@ -10,3 +10,12 @@ A simple Python app to record and manage journal entries.
 ## 🚀 How to Run
 ```bash
 python main.py
+```
+## 📁 Folder Structure
+```
+journal-tracker/
+├── main.py # Main script for handling journals
+├── journals/ # Folder for journal entry files
+├── .gitignore # Git ignore rules
+└── README.md # Project documentation
+```
