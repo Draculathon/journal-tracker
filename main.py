@@ -17,13 +17,19 @@ def add_entry():
         print("Entry has been added successfully!")
 
 def read_entries():
-    pass
+    try:
+        with open("journals/entries.txt","r") as file:
+            entries = file.readlines()
+            for num, entry in enumerate(entries, start= 1):
+                print(f"{num}. {entry.strip()}")
+    except FileNotFoundError:
+        print("No Entries found yet, try adding some first!")
 
 def filter_by_date():
     pass
 
 while True:
-
+    print()
     menu()
 
     try:
@@ -33,8 +39,10 @@ while True:
     
     if choice == 1:
         add_entry()
+        print()
     elif choice == 2:
-        pass
+        read_entries()
+        print()
     elif choice == 3:
         pass
     elif choice == 4:
