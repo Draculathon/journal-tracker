@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 print("Welcome to Journal Tracker!")
 #TODO: implemet delete_entry function
@@ -26,9 +26,37 @@ def read_entries():
         print("No Entries found yet, try adding some first!")
 
 def filter_by_date():
-    pass
+    try:
+        with open("journals/entries.txt", "r") as file:
+            entries = file.readlines()
+            
+            year = int(input("Enter the year: "))
+            month = int(input("Enter the month 1-12: "))
+            day = int(input("Enter the day 1-31: "))
+
+            chosen_date = date(year,month,day)
+            
+            found = False
+
+            for journal in entries:
+                journal = journal.strip()
+                journal_date_str, entry = journal.split("~")
+                journal_date_str = journal_date_str.strip()
+                journal_date = datetime.strptime(journal_date_str, "%Y-%m-%d").date()
+                if chosen_date == journal_date:
+                    print(f"-{entry}")
+                    found = True
+
+            if not found:
+                print("No entries found!")
+                   
+    except FileNotFoundError:
+        print("No journal found, Try adding some first!")
+    except ValueError:
+        print("Invalid input or date. Please enter correct numbers.")
 
 while True:
+
     print()
     menu()
 
@@ -44,7 +72,7 @@ while True:
         read_entries()
         print()
     elif choice == 3:
-        pass
+        filter_by_date()
     elif choice == 4:
         print("GoodBye!")
         break
