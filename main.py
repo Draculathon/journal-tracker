@@ -7,7 +7,8 @@ def menu():
     print("1. Add a journal entry")
     print("2. View entries")
     print("3. Filter entries by date")
-    print("4. Exit")
+    print("4. Delete entry")
+    print("5. Exit")
 
 def add_entry():
     with open("journals/entries.txt","a") as file:
@@ -55,8 +56,35 @@ def filter_by_date():
     except ValueError:
         print("Invalid input or date. Please enter correct numbers.")
 
-while True:
+def delete_entry():
+    try:
+        with open("journals/entries.txt", "r") as file:
+            entries = file.readlines()
+            
+            for num, entry in enumerate(entries, start= 1):
+                print(f"{num}. {entry}")
+            
+            delete_num = int(input("Enter the entry number you want to delete: "))
+            
+            if delete_num > len(entries):
+                print("Invalid choice. Please enter a number from the list.")
+            else:
+                choice = input(f"Are you sure you want to delete entry {delete_num}: ").lower()
+                if choice == "yes":
+                    del entries[delete_num - 1]
 
+                    with open("journals/entries.txt", "w") as file:
+                        file.writelines(entries)
+                        print("Entry deleted successfully!")
+                else: 
+                    pass
+    except FileNotFoundError:
+        print("No entries to delete.")
+    except ValueError:
+        print("Input invalid, try again!")
+
+while True:
+    
     print()
     menu()
 
@@ -74,6 +102,8 @@ while True:
     elif choice == 3:
         filter_by_date()
     elif choice == 4:
+        delete_entry()
+    elif choice == 5:
         print("GoodBye!")
         break
     else:
