@@ -8,7 +8,8 @@ def menu():
     print("2. View entries")
     print("3. Filter entries by date")
     print("4. Delete entry")
-    print("5. Exit")
+    print("5. Search entry")
+    print("6. Exit")
 
 def add_entry():
     with open("journals/entries.txt","a") as file:
@@ -83,6 +84,21 @@ def delete_entry():
     except ValueError:
         print("Input invalid, try again!")
 
+def search_entry():
+    try:
+        with open("journals/entries.txt", "r") as file:
+            entries = file.readlines()
+            keyword = input("Enter keyword to search for: ").strip()
+            found = False
+            for num, entry in enumerate(entries,start= 1):
+                if keyword.lower() in entry.lower():
+                    print(f"{num}. {entry.strip()}")
+                    found = True
+            if not found:
+                print("No matching entries found.")
+    except FileNotFoundError:
+        print("No entries yet, try adding some!")
+
 while True:
     
     print()
@@ -104,6 +120,8 @@ while True:
     elif choice == 4:
         delete_entry()
     elif choice == 5:
+        search_entry()
+    elif choice == 6:
         print("GoodBye!")
         break
     else:
