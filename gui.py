@@ -128,6 +128,68 @@ else:
         except FileNotFoundError:
             messagebox.showerror("Error", "No entries found, Try adding some first!")
 
+    def edit_entry():
+        try:
+            with open("journals/entries.txt", "r") as file:
+                entries = file.readlines()
+                
+                top = tkinter.Toplevel(window)
+                top.title("Edit Entries")
+                top.geometry("400x400")
+
+                text = tkinter.Text(top , height=10, width=50)
+                text.pack()
+
+                for num, entry in enumerate(entries, start=1):
+                    text.insert(tkinter.END, f"{num}. {entry}")
+                text.config(state="disabled")
+
+                label = tkinter.Label(top, text="Enter an entry to edit:")
+                label.pack(pady= 3)
+
+                entry = tkinter.Entry(top)
+                entry.pack(pady=5)
+
+                def confirm_edit():
+                    number = entry.get()
+                    if number.isdigit():
+                        number = int(number)
+                        if 1 <= number <= len(entries):
+                            bottom = tkinter.Toplevel(top)
+                            bottom.title("Editing blog")
+
+                            sub_text = tkinter.Text(bottom, height=10, width=40)
+                            sub_text.pack()
+
+                            old_entry = entries[number - 1].strip()
+                            sub_text.insert(tkinter.END, old_entry)
+
+                            def sub_save_entry():
+
+                                new_entry = sub_text.get("1.0", tkinter.END).strip()
+                                entries.insert(number - 1, new_entry + "\n")
+
+                                with open("journals/entries.txt", "w") as file:
+                                    file.writelines(entries)
+                                
+                                messagebox.showinfo("Success", "Entry updated successfully!")
+                                bottom.destroy()
+                                top.destroy()
+
+                            sub_save_button = tkinter.Button(bottom, text="save", command=sub_save_entry)
+                            sub_save_button.pack(pady=5)
+                            
+                        else:
+                            messagebox.showerror("Error", "Entry number doesn't exist, try again.")
+                    else:
+                        messagebox.showerror("Error", "Input must be a number.")                
+                
+                sub_edit_button = tkinter.Button(top, text="Edit", command=confirm_edit)
+                sub_edit_button.pack(pady=5)
+
+        except FileNotFoundError:
+            messagebox.showerror("Error", "No entries found, try adding some first.")
+
     # Gui Setup
     window = tkinter.Tk()
     window.title("Journal Tracker")
@@ -146,17 +208,20 @@ else:
     save_button.pack(pady=4)
 
     # View entries Button
-    view_button = tkinter.Button(window, text= "View entries", command=view_entries)
+    view_button = tkinter.Button(window, text= "View Entries", command=view_entries)
     view_button.pack(pady=4)
 
     # Filter by Date Button
-    filter_button = tkinter.Button(window, text= "Filter by Date", command=filter_by_date)
+    filter_button = tkinter.Button(window, text= "Filter By Date", command=filter_by_date)
     filter_button.pack(pady= 4)
 
     # Delete Entry Button
-    delete_button = tkinter.Button(window, text="Delete entry", command=delete_entry)
+    delete_button = tkinter.Button(window, text="Delete Entry", command=delete_entry)
     delete_button.pack(pady=4)
 
+    # Edit Entry Button
+    edit_button = tkinter.Button(window, text= "Edit Entry" , command=edit_entry)
+    edit_button.pack(pady=4)
     # Run the app
     window.mainloop()
 
