@@ -86,6 +86,48 @@ else:
         except FileNotFoundError:
             messagebox.showerror("Error", "No entries found. Try adding some first.")
 
+    def delete_entry():
+        try:
+            with open("journals/entries.txt", "r") as file:
+                entries = file.readlines()
+
+                top = tkinter.Toplevel(window)
+                top.title("Entries")
+
+                text = tkinter.Text(top, height=10, width=50)
+                text.pack()
+
+                for num, entry in enumerate(entries, start=1):
+                    text.insert(tkinter.END, f"{num}. {entry}")
+                text.config(state="disabled")
+
+                # Asking for Entry Number
+                label = tkinter.Label(top, text="Enter the number of the entry you would like to delete: ")
+                label.pack()
+                blog = tkinter.Entry(top)
+                blog.pack()
+
+                def confirm_delete():
+                    number = blog.get()
+                    if number.isdigit():
+                        number = int(number)
+                        if 1 <= number <= len(entries):
+                            del entries[number - 1]
+                            with open("journals/entries.txt", "w") as file:
+                                file.writelines(entries)
+                            messagebox.showinfo("Deleted", "Entry deleted successfully.")
+                            top.destroy()
+                        else:
+                            messagebox.showerror("Error", "Entry number out of range.")
+                    else:
+                        messagebox.showerror("Error", "Invalid input, please enter a valid entry number.")
+
+            sub_delete_button = tkinter.Button(top, text="Delete", command=confirm_delete)
+            sub_delete_button.pack(pady=5)
+            
+        except FileNotFoundError:
+            messagebox.showerror("Error", "No entries found, Try adding some first!")
+
     # Gui Setup
     window = tkinter.Tk()
     window.title("Journal Tracker")
@@ -110,6 +152,10 @@ else:
     # Filter by Date Button
     filter_button = tkinter.Button(window, text= "Filter by Date", command=filter_by_date)
     filter_button.pack(pady= 4)
+
+    # Delete Entry Button
+    delete_button = tkinter.Button(window, text="Delete entry", command=delete_entry)
+    delete_button.pack(pady=4)
 
     # Run the app
     window.mainloop()
