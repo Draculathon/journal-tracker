@@ -25,6 +25,33 @@ else:
         else:
             messagebox.showwarning("Empty Entry", "Please write something before saving.")
 
+    def view_entries():
+        try:
+            with open("journals/entries.txt", "r") as file:
+                entries = file.readlines()
+
+                # Create a new window
+                top = tkinter.Toplevel(window)
+                top.title("Journal Entries")
+                
+                # create a Text widget
+                text = tkinter.Text(top, height=10, width=50)
+                text.pack()
+
+                for num, entry in enumerate(entries, start=1):
+                    text.insert(tkinter.END, f"{num}. {entry}")
+                text.config(state="disabled")
+                
+                # create a scrollbar
+                scrollbar = tkinter.Scrollbar(top, command=text.yview)
+                scrollbar.pack(side="right", fill="y")
+
+                #Link the text to scrollbar
+                text.config(yscrollcommand=scrollbar.set)
+
+        except FileNotFoundError:
+            messagebox.showerror("Error", "No entries found. Try adding some first.")
+
     # Gui Setup
     window = tkinter.Tk()
     window.title("Journal Tracker")
@@ -41,6 +68,10 @@ else:
     # Save Button     
     save_button = tkinter.Button(window, text="Save Entry", command=save_entry)
     save_button.pack(pady=10)
+
+    # View entries Button
+    view_button = tkinter.Button(window, text= "View entries", command=view_entries)
+    view_button.pack(pady=4)
 
     # Run the app
     window.mainloop()
