@@ -13,15 +13,19 @@ else:
     
     def save_entry():
         entry_text = text_box.get("1.0", tkinter.END).strip()
-
+        mood = mood_slot.get().strip() or "Unknown"
+        weather = weather_slot.get().strip() or "Unknown"
+        today = date.today()
+        
         if entry_text:
-            today = date.today()
 
             with open("journals/entries.txt", "a") as file:
-                file.write(f"{today} ~ {entry_text}\n")
+                file.write(f"{entry_text} ~ {today} ~ {mood} ~ {weather}\n")
 
             messagebox.showinfo("Saved", "Journal entry saved successfully!")
             text_box.delete("1.0" , tkinter.END)
+            mood_slot.delete(0, tkinter.END)
+            weather_slot.delete(0, tkinter.END)
 
         else:
             messagebox.showwarning("Empty Entry", "Please write something before saving.")
@@ -73,7 +77,8 @@ else:
 
                 matching = []
                 for entry in entries:
-                    journal_date, journal = entry.strip().split("~")
+                    journal, journal_date, mood, weather = entry.strip().split("~")
+
                     if user_date.strip() == journal_date.strip():
                         matching.append(journal.strip())
                 
@@ -168,7 +173,8 @@ else:
 
                                 new_entry = sub_text.get("1.0", tkinter.END).strip()
                                 entries.insert(number - 1, new_entry + "\n")
-
+                                global old_entry
+                                del old_entry
                                 with open("journals/entries.txt", "w") as file:
                                     file.writelines(entries)
                                 
@@ -203,6 +209,18 @@ else:
     text_box = tkinter.Text(window, height=10, width=40)
     text_box.pack()
 
+    # Mood slot
+    mood_text = tkinter.Label(window,text="Mood:")
+    mood_slot = tkinter.Entry(window)
+    mood_text.pack()
+    mood_slot.pack(pady= 5)
+
+    # Weather slot
+    weather_text = tkinter.Label(window, text="Weather:")
+    weather_slot = tkinter.Entry(window)
+    weather_text.pack()
+    weather_slot.pack(pady=5)
+
     # Save Button     
     save_button = tkinter.Button(window, text="Save Entry", command=save_entry)
     save_button.pack(pady=4)
@@ -222,6 +240,7 @@ else:
     # Edit Entry Button
     edit_button = tkinter.Button(window, text= "Edit Entry" , command=edit_entry)
     edit_button.pack(pady=4)
+
     # Run the app
     window.mainloop()
 
