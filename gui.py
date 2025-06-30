@@ -2,6 +2,7 @@ import tkinter
 import os
 from datetime import date
 from tkinter import messagebox
+import tkinter.font
 import tkinter.simpledialog
 
 # Making sure 'journals' folder exists
@@ -166,15 +167,14 @@ else:
                             sub_text = tkinter.Text(bottom, height=10, width=40)
                             sub_text.pack()
 
-                            old_entry = entries[number - 1].strip()
+                            old_entry = entries.pop(number - 1).strip()
                             sub_text.insert(tkinter.END, old_entry)
 
                             def sub_save_entry():
 
                                 new_entry = sub_text.get("1.0", tkinter.END).strip()
                                 entries.insert(number - 1, new_entry + "\n")
-                                global old_entry
-                                del old_entry
+
                                 with open("journals/entries.txt", "w") as file:
                                     file.writelines(entries)
                                 
@@ -196,51 +196,95 @@ else:
         except FileNotFoundError:
             messagebox.showerror("Error", "No entries found, try adding some first.")
 
+    def view_metadata():
+        try:
+            with open("journals/entries.txt", "r") as file:
+                entries = file.readlines()
+                
+                top = tkinter.Toplevel(window)
+                top.title("Metadata")
+
+                scrollbar = tkinter.Scrollbar(top)
+                scrollbar.pack(side="right", fill="y")
+
+                text = tkinter.Text(top , wrap="word", yscrollcommand=scrollbar.set)
+                text.pack(expand=True, fill="both")
+                scrollbar.config(command=text.yview)
+
+                for intry in entries:
+                    entry, date, mood, weather = intry.strip().split("~")
+                    text.insert(tkinter.END, f"Entry: {entry.strip()}\nDate: {date.strip()}\nMood: {mood.strip()}\nWeather: {weather.strip()}\n{"-"*40}\n\n")
+                text.config(state="disabled")
+
+        except FileNotFoundError:
+            messagebox.showerror("Error", "No entries found, please try adding some first.")
+
     # Gui Setup
     window = tkinter.Tk()
     window.title("Journal Tracker")
-    window.geometry("400x500")
-
+    window.geometry("400x600")
+    window.config(bg="#E6E6E6")
+    
+    # Required Fonts
+    header_font = tkinter.font.Font(family="Helvetica" , size=14, weight="normal")
+    medium_font = tkinter.font.Font(family="Helvatica", size=11, weight="bold")
+    medium_font_normal = tkinter.font.Font(family="Helvatica", size=12, weight="normal")
+    mid_small_font = tkinter.font.Font(family="Helvatica", size=10, weight="bold")
+    small_font = tkinter.font.Font(family="Helvatica", size=8)
+    
     # Label
-    label = tkinter.Label(window, text="Write your journal entry below:")
+    label = tkinter.Label(window, text="Write your journal entry below:", bg="#E6E6E6")
     label.pack(pady=10)
+    label.config(font=header_font)
 
     # Text Box
-    text_box = tkinter.Text(window, height=10, width=40)
-    text_box.pack()
+    text_box = tkinter.Text(window, height=10, width=50,bg="#F5F5F5", font=small_font)
+    text_box.pack(fill="x", padx=10, pady=(10,2))
 
     # Mood slot
-    mood_text = tkinter.Label(window,text="Mood:")
-    mood_slot = tkinter.Entry(window)
-    mood_text.pack()
-    mood_slot.pack(pady= 5)
+    mood_text = tkinter.Label(window,text="Mood:", bg="#E6E6E6")
+    mood_text.config(font=medium_font_normal)
+    mood_slot = tkinter.Text(window, height=2, bg="#F5F5F5", font=small_font)
+    mood_text.pack(pady=(2,0))
+    mood_slot.pack(fill="x", pady=(0,2), padx=10)
 
     # Weather slot
-    weather_text = tkinter.Label(window, text="Weather:")
-    weather_slot = tkinter.Entry(window)
-    weather_text.pack()
-    weather_slot.pack(pady=5)
+    weather_text = tkinter.Label(window, text="Weather:", bg="#E6E6E6")
+    weather_text.config(font=medium_font_normal)
+    weather_slot = tkinter.Text(window,height=2, bg="#F5F5F5", font=small_font)
+    weather_text.pack(pady=(2,0))
+    weather_slot.pack(fill="x",pady=(0,5), padx=10)
 
     # Save Button     
-    save_button = tkinter.Button(window, text="Save Entry", command=save_entry)
-    save_button.pack(pady=4)
+    save_button = tkinter.Button(window, text="Save Entry",height=1 , width=20, command=save_entry)
+    save_button.config(font=medium_font, bg= "#6174d3", relief="groove", bd=2)
+    save_button.pack(pady=(5,20))
 
     # View entries Button
-    view_button = tkinter.Button(window, text= "View Entries", command=view_entries)
-    view_button.pack(pady=4)
+    view_button = tkinter.Button(window, text= "View Entries", height=1 , width=20, command=view_entries)
+    view_button.config(font=medium_font, bg= "#61d376", relief="groove", bd=2)
+    view_button.pack(pady=5)
 
     # Filter by Date Button
-    filter_button = tkinter.Button(window, text= "Filter By Date", command=filter_by_date)
-    filter_button.pack(pady= 4)
-
-    # Delete Entry Button
-    delete_button = tkinter.Button(window, text="Delete Entry", command=delete_entry)
-    delete_button.pack(pady=4)
+    filter_button = tkinter.Button(window, text= "Filter By Date", height=1 , width=20, command=filter_by_date)
+    filter_button.config(font=medium_font, bg="#e1e342", relief="groove", bd=2)
+    filter_button.pack(pady= 5)
 
     # Edit Entry Button
-    edit_button = tkinter.Button(window, text= "Edit Entry" , command=edit_entry)
-    edit_button.pack(pady=4)
+    edit_button = tkinter.Button(window, text= "Edit Entry" , height=1 , width=20, command=edit_entry)
+    edit_button.config(font=medium_font, bg="#d38244", relief="groove", bd=2)
+    edit_button.pack(pady=5)
 
+    # Delete Entry Button
+    delete_button = tkinter.Button(window, text="Delete Entry", height=1 , width=20, command=delete_entry)
+    delete_button.config(font=medium_font, bg="#d34444", relief="groove", bd=2)
+    delete_button.pack(pady=5)
+
+    # Metadata Button
+    metadata_button = tkinter.Button(window, text="View Metadata", height=1 , width=20, command=view_metadata)
+    metadata_button.config(font=medium_font, bg="black", fg="White", relief="groove", bd=2)
+    metadata_button.pack(pady=5)
+    
     # Run the app
     window.mainloop()
 
