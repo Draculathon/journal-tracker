@@ -219,11 +219,52 @@ else:
         except FileNotFoundError:
             messagebox.showerror("Error", "No entries found, please try adding some first.")
 
+    def keyword_search():
+        try:
+            with open("journals/entries.txt", "r") as file:
+                entries = file.readlines()
+
+                user_word = tkinter.simpledialog.askstring("Keyword Search", "Enter Keyword:")
+                if not user_word or not user_word.strip():
+                    return
+                user_word = user_word.lower().strip()
+
+                top = tkinter.Toplevel(window)
+                top.title("Search Results")
+                top.geometry("500x400")
+
+                scrollbar = tkinter.Scrollbar(top)
+                scrollbar.pack(side="right", fill="y"),
+
+                text = tkinter.Text(top, height=10, width=50)
+                text.pack(expand=True, fill="both")
+                scrollbar.config(command=text.yview)
+
+                found = False
+                for entry in entries:
+                    journal,journal_date,mood,weather = entry.strip().split("~")
+                    
+                    if user_word == mood.strip().lower() or user_word == weather.strip().lower():
+                        text.insert(tkinter.END, f"Entry: {journal.strip()}\nDate: {journal_date.strip()}\nMood: {mood.strip()}\nWeather: {weather.strip()}")
+                        found = True
+
+                if not found:
+                    text.insert(tkinter.END, "No entries found with that mood/weather.")
+                text.config(state="disabled")
+        except FileNotFoundError:
+            messagebox.showerror("Error", "No entries found, try adding some first!")
+
+    def confirm_close():
+        if messagebox.askokcancel("Exit", "Are you sure to exit?"):
+            window.destroy()
+        else:
+            return
+
     # Gui Setup
     window = tkinter.Tk()
     window.title("Journal Tracker")
-    window.geometry("400x600")
     window.config(bg="#E6E6E6")
+    window.resizable(True,True)
     
     # Required Fonts
     header_font = tkinter.font.Font(family="Helvetica" , size=14, weight="normal")
@@ -267,8 +308,13 @@ else:
 
     # Filter by Date Button
     filter_button = tkinter.Button(window, text= "Filter By Date", height=1 , width=20, command=filter_by_date)
-    filter_button.config(font=medium_font, bg="#e1e342", relief="groove", bd=2)
+    filter_button.config(font=medium_font, bg="#9d9f38", relief="groove", bd=2)
     filter_button.pack(pady= 5)
+
+    # Keyword Search Button
+    search_button = tkinter.Button(window, text="Search", height=1, width=20, command=keyword_search)
+    search_button.config(font=medium_font, bg= "#e1e342", relief="groove", bd=2)
+    search_button.pack(pady=5)
 
     # Edit Entry Button
     edit_button = tkinter.Button(window, text= "Edit Entry" , height=1 , width=20, command=edit_entry)
@@ -281,12 +327,17 @@ else:
     delete_button.pack(pady=5)
 
     # Metadata Button
-    metadata_button = tkinter.Button(window, text="View Metadata", height=1 , width=20, command=view_metadata)
+    metadata_button = tkinter.Button(window, text="Metadata View", height=1 , width=20, command=view_metadata)
     metadata_button.config(font=medium_font, bg="black", fg="White", relief="groove", bd=2)
-    metadata_button.pack(pady=5)
+    metadata_button.pack(pady=(5,20))
+     
+    # Close App confirmation
+    window.protocol("WM_DELETE_WINDOW", confirm_close)
     
     # Run the app
     window.mainloop()
+
+   
 
 
 
