@@ -5,6 +5,14 @@ from tkinter import messagebox
 import tkinter.font
 import tkinter.simpledialog
 
+def read_entries():
+        with open("journals/entries.txt", "r") as file:
+            return file.readlines()
+
+def write_entries(entries):
+    with open("journals/entries.txt", "w") as file:
+        file.writelines(entries)
+
 # Making sure 'journals' folder exists
 if not os.path.exists("journals"):
 
@@ -13,11 +21,25 @@ if not os.path.exists("journals"):
 else:
     
     def save_entry():
+        """
+        This function takes the entry, mood and weather and stores them into a file with the time it was activated.
+
+        Parameters:
+        entry (string): user's journal.
+        date(YYYY-MM-DD): the moment the user activates the function.
+        mood (string): user's mood or default value 'Unknown'.
+        weather (string): user's weather's state or default value 'Unknown'.
+
+        Returns:
+        Entry saved into the file, with success message or Error if the Entry had problems.
+        """
         entry_text = text_box.get("1.0", tkinter.END).strip()
-        mood = mood_slot.get().strip() or "Unknown"
-        weather = weather_slot.get().strip() or "Unknown"
+        mood = mood_slot.get("1.0", tkinter.END).strip() or "Unknown"
+        weather = weather_slot.get("1.0", tkinter.END).strip() or "Unknown"
         today = date.today()
         
+        # The condition wont work 100% because mood/weather = "Unknown" by default which is > 2.
+
         if not entry_text:
             messagebox.showwarning("Empty Entry","Please write something before saving.")
         elif len(mood)<= 2:
@@ -34,9 +56,18 @@ else:
             weather_slot.delete(0, tkinter.END)
         
     def view_metadata():
+        """
+        This function view all the entries in the file, Entry / date / mood / weather.
+
+        Parameters:
+        entry (string): user's journal.
+        date(YYYY-MM-DD): the moment the user activates the function.
+        mood (string): user's mood or default value 'Unknown'.
+        weather (string): user's weather's state or default value 'Unknown'.
+
+        """
         try:
-            with open("journals/entries.txt", "r") as file:
-                entries = file.readlines()
+                entries = read_entries()
                 
                 top = tkinter.Toplevel(window)
                 top.title("Metadata")
@@ -49,17 +80,30 @@ else:
                 scrollbar.config(command=text.yview)
 
                 for intry in entries:
-                    entry, date, mood, weather = intry.strip().split("~")
-                    text.insert(tkinter.END, f"Entry: {entry.strip()}\nDate: {date.strip()}\nMood: {mood.strip()}\nWeather: {weather.strip()}\n{"-"*40}\n\n")
+                    try:
+                        entry, date, mood, weather = intry.strip().split("~")
+                        text.insert(tkinter.END, f"{entry.strip()}\nDate: {date.strip()}\nMood: {mood.strip()}\nWeather: {weather.strip()}\n{"-"*40}\n\n")
+                    except ValueError:
+                        print("Skipping malformed entry:", intry)
                 text.config(state="disabled")
 
         except FileNotFoundError:
             messagebox.showerror("Error", "No entries found, please try adding some first.")
     
     def filter_by_date():
+        """
+        This function view the entries within a specific day, entry / entry_date / mood / weather.
+
+        Parameters:
+        date (YYYY-MM-DD): the required day date. 
+        entry (string): user's journal.
+        entry_date(YYYY-MM-DD): the moment the user activates the function.
+        mood (string): user's mood or default value 'Unknown'.
+        weather (string): user's weather's state or default value 'Unknown'.
+
+        """
         try:
-            with open("journals/entries.txt", "r") as file:
-                entries = file.readlines()
+                entries = read_entries()
                 
                 # Asking for required Date
                 user_date = tkinter.simpledialog.askstring("Date filter", "Enter the date to want to check YYYY-MM-DD :")
@@ -89,42 +133,58 @@ else:
             messagebox.showerror("Error", "No entries found. Try adding some first.")
 
     def delete_entry():
+        """
+        This function takes the wanted user entry and deletes it from the entries file.
+
+        Parameters:
+        Entry_number(int): The number of the wanted entry.
+
+        Returns:
+        Deleting the Entry from the file.
+
+        """
         try:
-            with open("journals/entries.txt", "r") as file:
-                entries = file.readlines()
+            entries = read_entries()
 
-                top = tkinter.Toplevel(window)
-                top.title("Entries")
-                top.resizable()
+            # Adding new window top
 
-                text = tkinter.Text(top)
-                text.pack(fill="both", expand=True)
+            top = tkinter.Toplevel(window)
+            top.title("Entries")
+            top.resizable()
 
-                for num, entry in enumerate(entries, start=1):
-                    journal,journal_date,mood,weather = entry.strip().split("~")
-                    text.insert(tkinter.END, f"{num}. {journal.strip()}\nDate: {journal_date.strip()}\nMood: {mood.strip()}\nWeather: {weather.strip()}\n{"-"*40}\n")
-                text.config(state="disabled")
+            # Adding Text Box in top
 
-                # Asking for Entry Number
-                label = tkinter.Label(top, text="Enter the number of the entry you would like to delete: ")
-                label.pack()
-                blog = tkinter.Entry(top)
-                blog.pack()
+            text = tkinter.Text(top)
+            text.pack(fill="both", expand=True)
 
-                def confirm_delete():
-                    number = blog.get()
-                    if number.isdigit():
-                        number = int(number)
-                        if 1 <= number <= len(entries):
-                            del entries[number - 1]
-                            with open("journals/entries.txt", "w") as file:
-                                file.writelines(entries)
-                            messagebox.showinfo("Deleted", "Entry deleted successfully.")
-                            top.destroy()
-                        else:
-                            messagebox.showerror("Error", "Entry number out of range.")
+            # Showing the number of each entry
+
+            for num, entry in enumerate(entries, start=1):
+                journal,journal_date,mood,weather = entry.strip().split("~")
+                text.insert(tkinter.END, f"{num}. {journal.strip()}\nDate: {journal_date.strip()}\nMood: {mood.strip()}\nWeather: {weather.strip()}\n{"-"*40}\n")
+            text.config(state="disabled")
+
+            # Asking for Entry Number
+            label = tkinter.Label(top, text="Enter the number of the entry you would like to delete: ")
+            label.pack()
+            blog = tkinter.Entry(top)
+            blog.pack()
+
+            # Deleting the entry if the number is valid
+
+            def confirm_delete():
+                number = blog.get()
+                if number.isdigit():
+                    number = int(number)
+                    if 1 <= number <= len(entries):
+                        del entries[number - 1]
+                        write_entries(entries)
+                        messagebox.showinfo("Deleted", "Entry deleted successfully.")
+                        top.destroy()
                     else:
-                        messagebox.showerror("Error", "Invalid input, please enter a valid entry number.")
+                        messagebox.showerror("Error", "Entry number out of range.")
+                else:
+                    messagebox.showerror("Error", "Invalid input, please enter a valid entry number.")
 
             sub_delete_button = tkinter.Button(top, text="Delete", command=confirm_delete)
             sub_delete_button.pack(pady=5)
@@ -133,9 +193,22 @@ else:
             messagebox.showerror("Error", "No entries found, Try adding some first!")
 
     def edit_entry():
+        """
+        This function takes the user wanted entry and edits it, entry / date / mood / weather.
+
+        Parameters:
+        entry_number (int): the number of the wanted entry.
+        entry (string): user's journal.
+        date(YYYY-MM-DD): the moment the user activates the function.
+        mood (string): user's mood or default value 'Unknown'.
+        weather (string): user's weather's state or default value 'Unknown'.
+
+        Returns:
+        Edited entry in the file.
+
+        """
         try:
-            with open("journals/entries.txt", "r") as file:
-                entries = file.readlines()
+                entries = read_entries()
                 
                 top = tkinter.Toplevel(window)
                 top.title("Edit Entries")
@@ -161,9 +234,9 @@ else:
                 entry = tkinter.Entry(top)
                 entry.pack(pady=5)
 
-                def confirm_edit():
+                def confirm_edit(): # this function first put the desired entry in a text box to be edited
                     number = entry.get()
-                    if number.isdigit():
+                    if number.isdigit(): # making sure the entry is a number.
                         number = int(number)
                         if 1 <= number <= len(entries):
                             bottom = tkinter.Toplevel(top)
@@ -199,7 +272,7 @@ else:
                                 weather_entry.insert(tkinter.END, weather)
                             date_entry.config(state="disabled")
 
-                            def sub_save_entry():
+                            def sub_save_entry(): #this function grabs the edited parts and save them into the original file.
 
                                 new_entry = sub_text.get("1.0", tkinter.END).strip()
                                 new_date = date_entry.get().strip()
@@ -215,8 +288,7 @@ else:
                                 else:
                                     entries.insert(number - 1, f"{new_entry} ~ {new_date} ~ {new_mood} ~ {new_weather}\n")
 
-                                    with open("journals/entries.txt", "w") as file:
-                                        file.writelines(entries)
+                                    write_entries(entries)
                                 
                                     messagebox.showinfo("Success", "Entry updated successfully!")
                                     bottom.destroy()
@@ -237,9 +309,21 @@ else:
             messagebox.showerror("Error", "No entries found, try adding some first.")
 
     def keyword_search():
+        """
+        This function takes a keyword and gives all the entries that mood/weather has that keyword,  entry / date / mood / weather.
+
+        Parameters:
+        keyword (string): the desired word to be searched for.
+        entry (string): user's journal.
+        date(YYYY-MM-DD): the moment the user activates the function.
+        mood (string): user's mood or default value 'Unknown'.
+        weather (string): user's weather's state or default value 'Unknown'.
+
+        Returns:
+        view all entries with the same keyword.
+        """
         try:
-            with open("journals/entries.txt", "r") as file:
-                entries = file.readlines()
+                entries = read_entries()
 
                 user_word = tkinter.simpledialog.askstring("Keyword Search", "Enter Keyword:")
                 if not user_word or not user_word.strip():
@@ -271,7 +355,7 @@ else:
         except FileNotFoundError:
             messagebox.showerror("Error", "No entries found, try adding some first!")
 
-    def confirm_close():
+    def confirm_close(): # function asks the user to confirm exiting, if ok exist.
         if messagebox.askokcancel("Exit", "Are you sure to exit?"):
             window.destroy()
         else:
