@@ -95,12 +95,14 @@ else:
 
                 top = tkinter.Toplevel(window)
                 top.title("Entries")
+                top.resizable()
 
-                text = tkinter.Text(top, height=10, width=50)
-                text.pack()
+                text = tkinter.Text(top)
+                text.pack(fill="both", expand=True)
 
                 for num, entry in enumerate(entries, start=1):
-                    text.insert(tkinter.END, f"{num}. {entry}")
+                    journal,journal_date,mood,weather = entry.strip().split("~")
+                    text.insert(tkinter.END, f"{num}. {journal.strip()}\nDate: {journal_date.strip()}\nMood: {mood.strip()}\nWeather: {weather.strip()}\n{"-"*40}\n")
                 text.config(state="disabled")
 
                 # Asking for Entry Number
