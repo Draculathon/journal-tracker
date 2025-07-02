@@ -18,8 +18,13 @@ else:
         weather = weather_slot.get().strip() or "Unknown"
         today = date.today()
         
-        if entry_text:
-
+        if not entry_text:
+            messagebox.showwarning("Empty Entry","Please write something before saving.")
+        elif len(mood)<= 2:
+            messagebox.showwarning("Invalid Mood","Please enter a valid mood.")
+        elif len(weather)<= 2:
+            messagebox.showwarning("Invalid Weather","Please enter a valid weather.")
+        else:
             with open("journals/entries.txt", "a") as file:
                 file.write(f"{entry_text} ~ {today} ~ {mood} ~ {weather}\n")
 
@@ -27,10 +32,7 @@ else:
             text_box.delete("1.0" , tkinter.END)
             mood_slot.delete(0, tkinter.END)
             weather_slot.delete(0, tkinter.END)
-
-        else:
-            messagebox.showwarning("Empty Entry", "Please write something before saving.")
-
+        
     def view_entries():
         try:
             with open("journals/entries.txt", "r") as file:
@@ -164,23 +166,58 @@ else:
                             bottom = tkinter.Toplevel(top)
                             bottom.title("Editing blog")
 
+                            sub_text_label = tkinter.Label(bottom, text="journal:")
+                            sub_text_label.pack()
                             sub_text = tkinter.Text(bottom, height=10, width=40)
                             sub_text.pack()
 
+                            date_label = tkinter.Label(bottom,text="Date:")
+                            date_label.pack()
+                            date_entry =tkinter.Entry(bottom)
+                            date_entry.pack()
+
+                            mood_label = tkinter.Label(bottom,text= "Mood:")
+                            mood_label.pack()
+                            mood_entry = tkinter.Entry(bottom)
+                            mood_entry.pack()
+
+                            weather_label = tkinter.Label(bottom,text= "Weather:")
+                            weather_label.pack()
+                            weather_entry = tkinter.Entry(bottom)
+                            weather_entry.pack()
+
                             old_entry = entries.pop(number - 1).strip()
-                            sub_text.insert(tkinter.END, old_entry)
+                            old_entry_list = [old_entry]
+                            for intry in old_entry_list:
+                                journal,journal_date,mood,weather = intry.strip().split("~")
+                                sub_text.insert(tkinter.END, journal)
+                                date_entry.insert(tkinter.END, journal_date)
+                                mood_entry.insert(tkinter.END, mood)
+                                weather_entry.insert(tkinter.END, weather)
+                            date_entry.config(state="disabled")
 
                             def sub_save_entry():
 
                                 new_entry = sub_text.get("1.0", tkinter.END).strip()
-                                entries.insert(number - 1, new_entry + "\n")
-
-                                with open("journals/entries.txt", "w") as file:
-                                    file.writelines(entries)
+                                new_date = date_entry.get().strip()
+                                new_mood = mood_entry.get().strip()
+                                new_weather = weather_entry.get().strip()
                                 
-                                messagebox.showinfo("Success", "Entry updated successfully!")
-                                bottom.destroy()
-                                top.destroy()
+                                if not new_entry:
+                                    messagebox.showwarning("Empty Entry", "Please write something before saving.")
+                                elif len(new_mood) <=2:
+                                    messagebox.showwarning("Invalid Mood","Please enter a valid mood.")
+                                elif len(new_weather) <=2:
+                                    messagebox.showwarning("Invalid Weather","Please enter a valid weather.")
+                                else:
+                                    entries.insert(number - 1, f"{new_entry} ~ {new_date} ~ {new_mood} ~ {new_weather}\n")
+
+                                    with open("journals/entries.txt", "w") as file:
+                                        file.writelines(entries)
+                                
+                                    messagebox.showinfo("Success", "Entry updated successfully!")
+                                    bottom.destroy()
+                                    top.destroy()
 
                             sub_save_button = tkinter.Button(bottom, text="save", command=sub_save_entry)
                             sub_save_button.pack(pady=5)
