@@ -33,35 +33,29 @@ else:
             mood_slot.delete(0, tkinter.END)
             weather_slot.delete(0, tkinter.END)
         
-    def view_entries():
+    def view_metadata():
         try:
             with open("journals/entries.txt", "r") as file:
                 entries = file.readlines()
-
-                # Create a new window
+                
                 top = tkinter.Toplevel(window)
-                top.title("Journal Entries")
-                
-                # create a Text widget
-                text = tkinter.Text(top, height=10, width=50)
-                text.pack()
+                top.title("Metadata")
 
-                for num, entry in enumerate(entries, start=1):
-                    text.insert(tkinter.END, f"{num}. {entry}")
-                
-                # make the text box interactable
-                text.config(state="disabled")
-                
-                # create a scrollbar
-                scrollbar = tkinter.Scrollbar(top, command=text.yview)
+                scrollbar = tkinter.Scrollbar(top)
                 scrollbar.pack(side="right", fill="y")
 
-                #Link the text to scrollbar
-                text.config(yscrollcommand=scrollbar.set)
+                text = tkinter.Text(top , wrap="word", yscrollcommand=scrollbar.set)
+                text.pack(expand=True, fill="both")
+                scrollbar.config(command=text.yview)
+
+                for intry in entries:
+                    entry, date, mood, weather = intry.strip().split("~")
+                    text.insert(tkinter.END, f"Entry: {entry.strip()}\nDate: {date.strip()}\nMood: {mood.strip()}\nWeather: {weather.strip()}\n{"-"*40}\n\n")
+                text.config(state="disabled")
 
         except FileNotFoundError:
-            messagebox.showerror("Error", "No entries found. Try adding some first.")
-
+            messagebox.showerror("Error", "No entries found, please try adding some first.")
+    
     def filter_by_date():
         try:
             with open("journals/entries.txt", "r") as file:
@@ -233,29 +227,6 @@ else:
         except FileNotFoundError:
             messagebox.showerror("Error", "No entries found, try adding some first.")
 
-    def view_metadata():
-        try:
-            with open("journals/entries.txt", "r") as file:
-                entries = file.readlines()
-                
-                top = tkinter.Toplevel(window)
-                top.title("Metadata")
-
-                scrollbar = tkinter.Scrollbar(top)
-                scrollbar.pack(side="right", fill="y")
-
-                text = tkinter.Text(top , wrap="word", yscrollcommand=scrollbar.set)
-                text.pack(expand=True, fill="both")
-                scrollbar.config(command=text.yview)
-
-                for intry in entries:
-                    entry, date, mood, weather = intry.strip().split("~")
-                    text.insert(tkinter.END, f"Entry: {entry.strip()}\nDate: {date.strip()}\nMood: {mood.strip()}\nWeather: {weather.strip()}\n{"-"*40}\n\n")
-                text.config(state="disabled")
-
-        except FileNotFoundError:
-            messagebox.showerror("Error", "No entries found, please try adding some first.")
-
     def keyword_search():
         try:
             with open("journals/entries.txt", "r") as file:
@@ -339,7 +310,7 @@ else:
     save_button.pack(pady=(5,20))
 
     # View entries Button
-    view_button = tkinter.Button(window, text= "View Entries", height=1 , width=20, command=view_entries)
+    view_button = tkinter.Button(window, text= "View Entries", height=1 , width=20, command=view_metadata)
     view_button.config(font=medium_font, bg= "#61d376", relief="groove", bd=2)
     view_button.pack(pady=5)
 
@@ -361,12 +332,7 @@ else:
     # Delete Entry Button
     delete_button = tkinter.Button(window, text="Delete Entry", height=1 , width=20, command=delete_entry)
     delete_button.config(font=medium_font, bg="#d34444", relief="groove", bd=2)
-    delete_button.pack(pady=5)
-
-    # Metadata Button
-    metadata_button = tkinter.Button(window, text="Metadata View", height=1 , width=20, command=view_metadata)
-    metadata_button.config(font=medium_font, bg="black", fg="White", relief="groove", bd=2)
-    metadata_button.pack(pady=(5,20))
+    delete_button.pack(pady=(5,10))
      
     # Close App confirmation
     window.protocol("WM_DELETE_WINDOW", confirm_close)
