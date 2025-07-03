@@ -3,11 +3,11 @@
 A simple, flexible Python app to record, manage, and explore your journal entries — now with a terminal version and a full GUI version.
 
 ## ✨ Versions
-# 💻 Terminal Version (main.py)
+### 💻 Terminal Version (main.py)
 - Run directly in the terminal or console.
 - Simple text-based interaction.
 - Core features: add, view, filter by date, keyword search.
-# 💻 GUI Version (gui.py)
+### 💻 GUI Version (gui.py)
 - Full graphical user interface (Tkinter).
 - Clean design with colors, fonts, and clear layouts.
 - Features:
@@ -21,11 +21,11 @@ A simple, flexible Python app to record, manage, and explore your journal entrie
     - Input validation and prevention of invalid character.
 
 ## 🚀 How to Run
-# Terminal version
+### Terminal version
 ```bash
 python main.py
 ```
-# GUI Version
+### GUI Version
 ```bash
 python gui.py
 ```
@@ -39,7 +39,7 @@ journal-tracker/
 ├── .gitignore
 └── README.md         # Project documentation
 ```
-# Notes
+### Notes
 - Avoid using the ~ symbol in your journal text, mood, or weather. it's used as a separator internally.
 - Make sure the journals folder exists before running either version.
 ## 🛠️ Installation
@@ -48,7 +48,7 @@ git clone https://github.com/Draculathon/journal-tracker.git
 cd journal-tracker
 pip install tk # (Tkinter is included by default by most python installations)
 ```
-# Version
+### Version
 - Terminal: v1.1
 - GUI: v1.4 Final stable release
 
