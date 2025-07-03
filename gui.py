@@ -42,18 +42,16 @@ else:
 
         if not entry_text:
             messagebox.showwarning("Empty Entry","Please write something before saving.")
-        elif len(mood)<= 2:
-            messagebox.showwarning("Invalid Mood","Please enter a valid mood.")
-        elif len(weather)<= 2:
-            messagebox.showwarning("Invalid Weather","Please enter a valid weather.")
+        elif "~" in entry_text or "~" in mood or "~" in weather:
+            messagebox.showwarning("Warning", "Please do not use ~ Symbol.")
         else:
             with open("journals/entries.txt", "a") as file:
                 file.write(f"{entry_text} ~ {today} ~ {mood} ~ {weather}\n")
 
             messagebox.showinfo("Saved", "Journal entry saved successfully!")
             text_box.delete("1.0" , tkinter.END)
-            mood_slot.delete(0, tkinter.END)
-            weather_slot.delete(0, tkinter.END)
+            mood_slot.delete("1.0", tkinter.END)
+            weather_slot.delete("1.0", tkinter.END)
         
     def view_metadata():
         """
@@ -107,6 +105,8 @@ else:
                 
                 # Asking for required Date
                 user_date = tkinter.simpledialog.askstring("Date filter", "Enter the date to want to check YYYY-MM-DD :")
+                if not user_date or not user_date.strip():
+                    return
                 
                 # new window
                 top = tkinter.Toplevel(window)
@@ -115,18 +115,16 @@ else:
                 # Add text box
                 text = tkinter.Text(top, height=10, width=50)
                 text.pack()
-
-                matching = []
+                
+                found = False
                 for entry in entries:
                     journal, journal_date, mood, weather = entry.strip().split("~")
 
                     if user_date.strip() == journal_date.strip():
-                        matching.append(journal.strip())
+                        text.insert(tkinter.END, f"{journal.strip()}\nMood: {mood}\nWeather: {weather}\n{"-"*40}\n")
+                        found = True
                 
-                if matching:
-                    for item in matching:
-                        text.insert(tkinter.END, f"{item}\n")
-                else:
+                if not found:
                     text.insert(tkinter.END, "No entries found for that date.")
                 text.config(state="disabled")
         except FileNotFoundError:
@@ -345,8 +343,8 @@ else:
                 for entry in entries:
                     journal,journal_date,mood,weather = entry.strip().split("~")
                     
-                    if user_word == mood.strip().lower() or user_word == weather.strip().lower():
-                        text.insert(tkinter.END, f"Entry: {journal.strip()}\nDate: {journal_date.strip()}\nMood: {mood.strip()}\nWeather: {weather.strip()}")
+                    if user_word in mood.strip().lower() or user_word in weather.strip().lower():
+                        text.insert(tkinter.END, f"Entry: {journal.strip()}\nDate: {journal_date.strip()}\nMood: {mood.strip()}\nWeather: {weather.strip()}\n{"-"*40}\n")
                         found = True
 
                 if not found:
@@ -355,7 +353,7 @@ else:
         except FileNotFoundError:
             messagebox.showerror("Error", "No entries found, try adding some first!")
 
-    def confirm_close(): # function asks the user to confirm exiting, if ok exist.
+    def confirm_close(): # function asks the user to confirm exiting, if ok exit.
         if messagebox.askokcancel("Exit", "Are you sure to exit?"):
             window.destroy()
         else:
