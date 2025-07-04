@@ -29,6 +29,13 @@ python main.py
 ```bash
 python gui.py
 ```
+## 🖼️ Screenshots
+### Main Window
+![Main Window](screenshots/main_window.png)
+### Metadata View
+![Metadata View](screenshots/metadata_view.png)
+### Edit Entry
+![Edit Entry](screenshots/edit_entry.png)
 ## 📁 Folder Structure
 ```
 journal-tracker/
