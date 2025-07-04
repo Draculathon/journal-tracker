@@ -31,11 +31,11 @@ python gui.py
 ```
 ## 🖼️ Screenshots
 ### Main Window
-![Main Window](screenshots/main_window.png)
+![Main Window](Screenshots/main_window.png)
 ### Metadata View
-![Metadata View](screenshots/metadata_view.png)
+![Metadata View](Screenshots/metadata_view.png)
 ### Edit Entry
-![Edit Entry](screenshots/edit_entry.png)
+![Edit Entry](Screenshots/edit_entry.png)
 ## 📁 Folder Structure
 ```
 journal-tracker/
@@ -46,6 +46,17 @@ journal-tracker/
 ├── .gitignore
 └── README.md         # Project documentation
 ```
+## 🔮 Future Roadmap
+
+- 🌙 Dark mode or customizable themes.
+- 📤 Export entries to CSV or PDF.
+- 🏷️ Tags and categories for better organization.
+- 🗓️ Calendar view to see journal timeline.
+- ☁️ Cloud sync or backup support.
+- 🔒 Password protection for privacy.
+- 📊 Mood and weather analytics and insights.
+- 📱 Mobile-friendly or web version.
+
 ### Notes
 - Avoid using the ~ symbol in your journal text, mood, or weather. it's used as a separator internally.
 - Make sure the journals folder exists before running either version.
